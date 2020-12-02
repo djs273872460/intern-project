@@ -1,7 +1,7 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Login from "../views/login/Login.vue"
 
-const routes = [
+export const constantRoutes = [
   {
     path: '',
     redirect: '/login',
@@ -12,9 +12,37 @@ const routes = [
   }
 ];
 
+export const asyncRoutes = [
+  {
+    path: '/home',
+    component: () => import("../views/home/Home.vue")
+  }
+];
+
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes
+  history: createWebHistory(),
+  routes: constantRoutes
 });
+
+export function resetRouter() {
+  const newRouter = createRouter({
+    history: createWebHistory(),
+    routes: constantRoutes
+  });
+  router.matcher = newRouter.matcher;
+}
+let flag = true;
+router.beforeEach((to, from, next) => {
+  if (to.path == '/home' && flag) {
+    asyncRoutes.forEach(route => {
+      console.log(route);
+      router.addRoute(route);
+    })
+    flag = false;
+    next({...to,replace:true});
+  }else {
+    next();
+  }
+})
 
 export default router;
