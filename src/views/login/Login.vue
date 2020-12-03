@@ -2,8 +2,8 @@
 <div class="login-container" ref="loginContainer">
   <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="100px" class="login-form">
     <h2>Login Form</h2>
-    <el-form-item label="用户" prop="user">
-      <el-input type="text" v-model="loginForm.user" autocomplete="off"></el-input>
+    <el-form-item label="用户" prop="username">
+      <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
     </el-form-item>
     <el-form-item label="密码" prop="password">
       <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
@@ -17,16 +17,18 @@
 </template>
 
 <script>
+// import { loginValidate } from '@/api/validate'
+
 export default {
   name: 'Login',
   data(){
     return {
       loginForm: {
-        user: '',
+        username: '',
         password: ''
       },
       rules: {
-        user: [
+        username: [
           {required: true, message: '请输入用户名', trigger: 'blur'},
           {min: 6, max: 18, message: '长度在6-18位之间', trigger: 'blur'}
         ],
@@ -44,14 +46,35 @@ export default {
   methods: {
     submitForm() {
       this.$refs.loginForm.validate(valid => {
-        if(valid) {
-          this.$message.success("登录成功!");
-          this.$router.push({
-            path: '/home'
-          })
-        }else {
+        if(!valid) {
           this.$message.error("请输入正确的账户和密码!");
+          return
         }
+
+        /*
+        var entity = {
+          user: this.loginForm.username,
+          password: this.loginForm.password
+        };
+        loginValidate(entity).then(res => {
+
+        })
+        */
+
+
+        // this.$store.dispatch('login', this.loginForm)
+        //   .then(() => {
+        //     this.$message.success("登录成功!");
+        //     this.$router.push({path: '/home/dashboard'})
+        //   })
+        //   .catch(() => {
+        //     this.$message.error("请输入正确的账户和密码!");
+        //   })
+
+        this.$message.success("登录成功!");
+        this.$router.push({
+          path: '/home/dashboard'
+        })
       })
     },
     resetForm() {
