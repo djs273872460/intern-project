@@ -1,8 +1,8 @@
-// import axios from 'axios'
+import axios from 'axios'
 
-// const service = axios.create({
-//   baseURL:'',
-//   timeout: 5000
-// })
+const service = axios.create({
+  baseURL:'/dev-api',
+  timeout: 5000
+})
 
-// export default service
+export default service

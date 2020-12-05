@@ -17,7 +17,8 @@
 </template>
 
 <script>
-// import { loginValidate } from '@/api/validate'
+// import { loginValidate } from '../../api/validate'
+// import { getCategroyList } from "@/api/router-list.js"
 
 export default {
   name: 'Login',
@@ -29,19 +30,13 @@ export default {
       },
       rules: {
         username: [
-          {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 6, max: 18, message: '长度在6-18位之间', trigger: 'blur'}
+          {required: true, message: '请输入用户名', trigger: 'blur'}
         ],
         password: [
-          {required: true, message: '请输入用户密码', trigger: 'blur'},
-          {min: 6, max: 18, message: '长度在6-18位之间', trigger: 'blur'}
+          {required: true, message: '请输入用户密码', trigger: 'blur'}
         ]
       }
     }
-  },
-  unmounted() {
-    console.log(this.$router);
-    console.log(this.$route);
   },
   methods: {
     submitForm() {
@@ -51,30 +46,14 @@ export default {
           return
         }
 
-        /*
-        var entity = {
-          user: this.loginForm.username,
-          password: this.loginForm.password
-        };
-        loginValidate(entity).then(res => {
-
-        })
-        */
-
-
-        // this.$store.dispatch('login', this.loginForm)
-        //   .then(() => {
-        //     this.$message.success("登录成功!");
-        //     this.$router.push({path: '/home/dashboard'})
-        //   })
-        //   .catch(() => {
-        //     this.$message.error("请输入正确的账户和密码!");
-        //   })
-
-        this.$message.success("登录成功!");
-        this.$router.push({
-          path: '/home/dashboard'
-        })
+        this.$store.dispatch('login', this.loginForm)
+          .then(() => {
+            this.$message.success("登录成功!");
+            this.$router.push({path: '/home'})
+          })
+          .catch(() => {
+            this.$message.error("请输入正确的账户和密码!");
+          })
       })
     },
     resetForm() {

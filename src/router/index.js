@@ -8,7 +8,7 @@ import home from "../views/home/Home"
     redirect: '/login',
   },
   {
-    name: 'login',
+    name: 'Login',
     path: '/login',
     component: Login
   },
@@ -16,36 +16,16 @@ import home from "../views/home/Home"
     path: '/home',
     name: 'Home',
     component: home,
-    children: [
-      {
-        path: 'dashboard',
-        name: 'Dashboard',
-        component: () => import("../views/dashboard/index")
-      },
-      {
-        path: 'document',
-        name: 'Document',
-        component: () => import("../views/document/index")
-      },
-      {
-        path: 'chart',
-        name: 'Chart',
-        component: () => import("../views/chart/index")
-      }
-    ]
   }
 ];
-
-// const asyncRoutes = [
-//   {
-
-//   }
-// ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes
 });
+
+
+
 
 // let flag = true;
 // router.beforeEach((to, from, next) => {
