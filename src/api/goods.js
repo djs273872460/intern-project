@@ -1,9 +1,9 @@
 import request from '../utils/request'
 
-export function getGoodsList(params) {
+export function getGoodsList(data) {
   return request({
     url: '/Analysis/GetPageList',
-    method: 'get',
-    params
+    method: 'post',
+    data
   })
 }

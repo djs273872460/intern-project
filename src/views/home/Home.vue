@@ -1,7 +1,8 @@
 <template>
-  <el-container style="height: 700px; border: 1px solid #eee">
+  <el-container style="border: 1px solid #eee"
+                :style="'height:' + homeHeight">
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-      <el-menu :default-active="params.Category">
+      <el-menu :default-active="params.Category[0]">
         <el-menu-item
           v-for="item in sideList"
           :key="item.categoryId"
@@ -25,12 +26,13 @@
           >
           </el-input>
           <el-button
+            class="search-button"
             size="medium"
             type="primary"
             icon="el-icon-search"
             @click="searchGoods"
-            >搜索</el-button
-          >
+          >搜索
+          </el-button>
         </div>
       </el-header>
       <div
@@ -80,13 +82,20 @@
           </div>
         </div>
       </div>
-      <div v-else>没有商品啦！！！</div>
+      <el-alert
+        v-else
+        title="此页没有商品"
+        type="warning"
+        description="请点击其他页数获取商品"
+        show-icon>
+      </el-alert>
 
       <el-footer>
         <el-pagination
+          class="paging"
           background
           layout="prev, pager, next"
-          :total="400"
+          :total="240"
           :page-size="params.PageSize"
           :current-page="params.PageIndex"
           @current-change="currentPage"
@@ -106,20 +115,21 @@ import { getGoodsList } from "@/api/goods.js";
 export default {
   data() {
     return {
+      homeHeight: '',
       sideList: [],
       goodsList: [],
-      nextFlag: true,
       loading: true,
       currentTime: new Date().getTime(),
       params: {
-        Keyword: "",
-        Category: 1319,
+        Keyword: '',
+        Category: [],
         PageIndex: 1,
-        PageSize: 20
+        PageSize: 12
       }
     };
   },
   mounted() {
+    this.homeHeight = document.documentElement.clientHeight + 'px';
     this.loading = false;
     this.getCategroy();
     this.getGoods(this.params);
@@ -132,12 +142,19 @@ export default {
     getCategroy() {
       getCategroyList()
         .then(res => {
-          res.data.data.forEach(item => {
+          if(res.data.data.length == 0) {
+            this.$router.push({path:'/empty'});
+          }else {
+            res.data.data.forEach(item => {
             this.sideList.push(item);
-          });
+            });
+          }
+          // this.params.Category.push(this.sideList[0].categoryId);
+          // console.log(this.params.Category);
         })
         .catch(error => {
           console.log(error);
+          this.$router.push({path:'/empty'});
         });
     },
 
@@ -154,9 +171,6 @@ export default {
             good.endTime = new Date(good.endTime).getTime();
             this.goodsList.push(good);
           });
-          if (res.data.data.data.length < 8) {
-            this.nextFlag = false;
-          }
         })
         .catch(error => {
           console.log(error);
@@ -164,8 +178,13 @@ export default {
     },
 
     changeCateGory(item) {
-      this.params.Category = item.categoryId;
       this.params.PageIndex = 1;
+      if(item.categoryId == '') {
+        this.params.Category = [];
+      }else {
+        this.params.Category = [];
+        this.params.Category.push(item.categoryId);
+      }
       this.getGoods(this.params);
     },
 
@@ -200,23 +219,21 @@ export default {
 
 <style>
 .goods-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: space-around;
-  align-content: flex-start;
+  width: 1600px;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 .goods {
   width: 200px;
   padding: 20px;
   border-radius: 4px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  margin: 10px 0;
+  margin: 25px 0 0 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  float: left;
 }
 .goods-img {
   display: block;
@@ -255,18 +272,17 @@ export default {
   text-decoration: line-through;
 }
 .paging {
-}
-.paging span {
-  font-size: 30px;
-  font-weight: bold;
-  padding: 0 10px;
-  cursor: pointer;
+  margin-top: 25px;
 }
 .search {
   margin-top: 15px;
 }
 .search-input {
-  width: 200px;
+  width: 300px;
+}
+.search-button {
+  transform: translate(-100%,0);
+  border-radius: 0 4px 4px 0;
 }
 .state {
   width: 200px;
@@ -279,12 +295,12 @@ export default {
   color: #fff;
 }
 .not-start {
-  background-color: #ff8c00;
+  background-color: #E6A23C ;
 }
 .underway {
-  background-color: #55ff00;
+  background-color: #67C23A;
 }
 .finish {
-  background-color: #b3b3b3;
+  background-color: #909399;
 }
 </style>

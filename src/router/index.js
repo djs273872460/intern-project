@@ -16,6 +16,11 @@ import home from "../views/home/Home"
     path: '/home',
     name: 'Home',
     component: home,
+  },
+  {
+    path: '/empty',
+    name: 'Empty',
+    component: () => import('@/views/empty/Empty')
   }
 ];
 
