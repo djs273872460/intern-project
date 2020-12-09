@@ -84,9 +84,9 @@
       </div>
       <el-alert
         v-else
-        title="此页没有商品"
+        title="当前分类没有商品"
         type="warning"
-        description="请点击其他页数获取商品"
+        description="请点击其他分类获取商品"
         show-icon>
       </el-alert>
 
@@ -94,8 +94,8 @@
         <el-pagination
           class="paging"
           background
-          layout="prev, pager, next"
-          :total="240"
+          layout="total, prev, pager, next, jumper"
+          :total="total"
           :page-size="params.PageSize"
           :current-page="params.PageIndex"
           @current-change="currentPage"
@@ -119,6 +119,7 @@ export default {
       sideList: [],
       goodsList: [],
       loading: true,
+      total: '',
       currentTime: new Date().getTime(),
       params: {
         Keyword: '',
@@ -142,6 +143,7 @@ export default {
     getCategroy() {
       getCategroyList()
         .then(res => {
+          console.log(res);
           if(res.data.data.length == 0) {
             this.$router.push({path:'/empty'});
           }else {
@@ -149,8 +151,6 @@ export default {
             this.sideList.push(item);
             });
           }
-          // this.params.Category.push(this.sideList[0].categoryId);
-          // console.log(this.params.Category);
         })
         .catch(error => {
           console.log(error);
@@ -164,6 +164,7 @@ export default {
       getGoodsList(params)
         .then(res => {
           this.loading = false;
+          this.total = res.data.data.total;
           this.goodsList = [];
           this.currentTime = new Date().getTime();
           res.data.data.data.forEach(good => {
@@ -178,6 +179,7 @@ export default {
     },
 
     changeCateGory(item) {
+      this.params.Keyword = '';
       this.params.PageIndex = 1;
       if(item.categoryId == '') {
         this.params.Category = [];
@@ -218,6 +220,7 @@ export default {
 </script>
 
 <style>
+
 .goods-wrapper {
   width: 1600px;
   font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
@@ -273,6 +276,11 @@ export default {
 }
 .paging {
   margin-top: 25px;
+}
+.paging span{
+  padding: 0 5px;
+  background-color: #f4f4f5;
+  font-weight: 600;
 }
 .search {
   margin-top: 15px;

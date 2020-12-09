@@ -4,7 +4,7 @@ import home from "../views/home/Home"
 
  const constantRoutes = [
   {
-    path: '',
+    path: '/',
     redirect: '/login',
   },
   {
