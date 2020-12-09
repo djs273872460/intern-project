@@ -14,7 +14,7 @@
       </el-menu>
     </el-aside>
 
-    <el-container>
+    <el-container style="overflow: auto">
       <el-header>
         <div class="search">
           <el-input
@@ -61,24 +61,14 @@
           </div>
           <div v-else class="state underway">
             {{
-              Math.floor(
-                new Date(new Date(item.endTime).getTime() - currentTime) /
-                  (60 * 60 * 1000)
-              )
+              Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 60 * 1000))
             }}&nbsp;:
             {{
-              Math.floor(
-                new Date(new Date(item.endTime).getTime() - currentTime) /
-                  (60 * 1000)
-              )
+              Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 1000))
             }}&nbsp;:
             {{
-              Math.floor(
-                (new Date(new Date(item.endTime).getTime() - currentTime) %
-                  (60 * 1000)) /
-                  1000
-              )
-            }}&nbsp;
+              Math.floor((new Date(item.endTime).getTime() - currentTime) % (60 * 1000) /1000)
+            }}
           </div>
         </div>
       </div>
