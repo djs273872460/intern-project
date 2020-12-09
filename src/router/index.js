@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Login from "../views/login/Login.vue"
 import home from "../views/home/Home"
+import store from "../store"
 
  const constantRoutes = [
   {
@@ -29,22 +30,20 @@ const router = createRouter({
   routes: constantRoutes
 });
 
-
-
-
-// let flag = true;
-// router.beforeEach((to, from, next) => {
-//   if (to.path == '/home' && flag) {
-//     asyncRoutes.forEach(route => {
-//       console.log(route);
-//       router.addRoute(route);
-//     })
-//     flag = false;
-//     next({...to,replace:true});
-//   }else {
-//     next();
-//   }
-// })
-
+router.beforeEach((to, from, next) => {
+  if(store.getters.token){
+    if(to.path === "/login") {
+      next("/home")
+    }else {
+      next()
+    }
+  }else{
+    if(to.path === "/login") {
+      next()
+    }else {
+      next("/login")
+    }
+  }
+})
 
 export default router;

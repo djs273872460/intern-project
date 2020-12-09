@@ -2,12 +2,12 @@ import { createStore } from "vuex";
 import { loginValidate } from "../api/validate.js"
 import { getToken, setToken} from "../utils/auth.js"
 
-export default createStore({
+const store = createStore({
   state: {
     token: getToken()
   },
   getters: {
-
+    token: state => state.token,
   },
   mutations: {
     SET_TOKEN: (state, token) => {
@@ -33,3 +33,5 @@ export default createStore({
   },
   modules: {}
 });
+
+export default store
