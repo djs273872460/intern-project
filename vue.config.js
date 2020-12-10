@@ -4,11 +4,11 @@ module.exports = {
   publicPath: '/',
   devServer: {
     proxy: {
-      '/api': {
-        target: 'http://140.143.247.32:81/prod-api/',
+      '/dev-api': {
+        target: 'http://140.143.247.32:81',
         changeOrigin: true,
         pathRewrite: {    
-          '^/api': ''
+          '^/dev-api': '/api'
         }
       }
     }

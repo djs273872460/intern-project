@@ -8,7 +8,7 @@ import store from "./store";
 
 
 createApp(App)
-.use(ElementPlus, { locale })
+  .use(ElementPlus, { locale })
   .use(store)
   .use(router)
   .mount("#app");

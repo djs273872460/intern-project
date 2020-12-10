@@ -1,8 +1,8 @@
 <template>
   <el-container style="border: 1px solid #eee"
                 :style="'height:' + homeHeight">
-    <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-      <el-menu :default-active="params.Category[0]">
+    <el-aside width="200px" class="side">
+      <el-menu :default-active="currentCategory" style="border-right: 0">
         <el-menu-item
           v-for="item in sideList"
           :key="item.categoryId"
@@ -15,16 +15,53 @@
     </el-aside>
 
     <el-container style="overflow: auto">
-      <el-header>
-        <div class="search">
-          <el-input
-            class="search-input"
-            type="text"
+      <el-header class="header-wrapper">
+        <div class="category-select">
+          <el-select
+            v-if="childCategoryList.length && goodsList.length"
             size="medium"
-            v-model="params.Keyword"
-            placeholder="请输入内容"
+            multiple
+            v-model="childCategory"
+            @change="getChildGoods"
+            style="margin-left: 20px; overflow: hidden; width: 360px"
+            placeholder="请选择"
+            ref="select">
+            <el-option
+              v-for="item in childCategoryList"
+              :key="item.category"
+              :label="item.categoryName"
+              :value="item.category">
+            </el-option>
+          </el-select>
+        </div>
+
+        <div class="search">
+          <el-tag 
+            :key="tag" 
+            v-for="tag in tags" 
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)"
+            class="tag">
+            {{tag}}
+          </el-tag>
+
+          <el-input
+            class="input-new-tag"
+            v-if="inputVisible"
+            v-model="inputValue"
+            ref="saveTagInput"
+            size="medium"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
           >
           </el-input>
+          <el-button v-else
+              class="button-new-tag"
+              size="medium"
+              @click="showInput"
+            >添加搜索tag
+            </el-button>
           <el-button
             class="search-button"
             size="medium"
@@ -35,6 +72,7 @@
           </el-button>
         </div>
       </el-header>
+
       <div
         class="goods-wrapper"
         v-loading="loading"
@@ -74,9 +112,9 @@
       </div>
       <el-alert
         v-else
-        title="当前分类没有商品"
+        title="没有找到商品"
         type="warning"
-        description="请点击其他分类获取商品"
+        description="去看看其他吧！！！"
         show-icon>
       </el-alert>
 
@@ -101,12 +139,19 @@
 <script>
 import { getCategroyList } from "@/api/category.js";
 import { getGoodsList } from "@/api/goods.js";
+import { getChildCategoryList } from "@/api/child-category.js"
 
 export default {
   data() {
     return {
+      tags: [],
+      inputVisible: false,
+      inputValue: '',
       homeHeight: '',
+      currentCategory: '',
       sideList: [],
+      childCategoryList: [],
+      childCategory:[],
       goodsList: [],
       loading: true,
       total: '',
@@ -133,7 +178,6 @@ export default {
     getCategroy() {
       getCategroyList()
         .then(res => {
-          console.log(res);
           if(res.data.data.length == 0) {
             this.$router.push({path:'/empty'});
           }else {
@@ -168,16 +212,53 @@ export default {
         });
     },
 
+    //改变左侧Category 
     changeCateGory(item) {
+      this.currentCategory = item.categoryId;
       this.params.Keyword = '';
       this.params.PageIndex = 1;
-      if(item.categoryId == '') {
-        this.params.Category = [];
-      }else {
-        this.params.Category = [];
+      this.params.Category = [];
+      this.childCategoryList= [];
+      if(item.categoryId !== '') {
+        this.childCategory = [];
         this.params.Category.push(item.categoryId);
+        getChildCategoryList({'category':item.categoryId})
+          .then(res => {
+            this.childCategoryList = res.data.data;
+          })
+          .catch(error => {
+            console.log(error)
+          })
       }
       this.getGoods(this.params);
+    },
+
+    // 改变childCategory
+    getChildGoods() {
+      this.params.Category = [];
+      this.params.PageIndex = 1;
+      if(this.childCategory.length == 0) {
+        this.$refs.select.blur();
+        this.params.Category.push(this.currentCategory);
+      }else{
+        this.childCategory.forEach(category => {
+          this.params.Category.push(String(category));
+        });
+      }
+      this.getGoods(this.params);
+
+      // if(this.childCategory.length == 0) {
+      //   this.getGoods(this.params);
+      // }else {
+      //   let currentParams = Object.assign({}, this.params);
+      //   currentParams.Category = [];
+      //   this.childCategory.forEach(category => {
+      //     currentParams.Category.push(String(category));
+      //   })
+      //   console.log(currentParams);
+      //   debugger
+      //   this.getGoods(currentParams);
+      // }
     },
 
     prevPage() {
@@ -200,6 +281,28 @@ export default {
       this.getGoods(this.params);
     },
 
+    handleClose(tag) {
+      this.tags.splice(this.tags.indexOf(tag), 1);
+    },
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(() => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    handleInputConfirm() {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.tags.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
+    },
+    
+
+
+
+
     timeLag(time) {
       let e = new Date(time).getTime();
       let lag = e - this.currentTime;
@@ -210,6 +313,51 @@ export default {
 </script>
 
 <style>
+::-webkit-scrollbar {
+  width:8px;
+  height:8px; 
+  border-radius:10px;
+}
+::-webkit-scrollbar-thumb {
+  display:block; 
+  width:6px; 
+  border-radius: 10px;
+  background: rgb(226, 226, 226);
+}
+.side {
+  margin-right: 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+.header-wrapper {
+  max-width: 1600px;
+  min-width: 630px;
+}
+.category-select {
+  margin-top: 15px;
+  float: left;
+}
+.search {
+  margin-top: 15px;
+  float: right;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
+.button-new-tag {
+  border-radius: 4px 0  0 4px;
+}
+.search-button {
+  border-radius: 0 4px 4px 0;
+  margin-left: 0 !important;
+}
+.tag{
+  margin-right: 10px;
+}
+
 
 .goods-wrapper {
   width: 1600px;
@@ -272,16 +420,7 @@ export default {
   background-color: #f4f4f5;
   font-weight: 600;
 }
-.search {
-  margin-top: 15px;
-}
-.search-input {
-  width: 300px;
-}
-.search-button {
-  transform: translate(-100%,0);
-  border-radius: 0 4px 4px 0;
-}
+
 .state {
   width: 200px;
   height: 25px;
