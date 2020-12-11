@@ -18,9 +18,9 @@
       <el-header class="header-wrapper">
         <div class="category-select">
           <el-select
-            v-if="childCategoryList.length"
             size="medium"
             multiple
+            filterable
             v-model="childCategory"
             @change="addChildCategory"
             style="margin-left: 20px; overflow: hidden; width: 360px"
@@ -169,9 +169,14 @@ export default {
     this.loading = false;
     this.getCategroy();
     this.getGoods(this.params);
+    this.getChildCategoryList('');
     setInterval(() => {
       this.currentTime = new Date().getTime();
     }, 1000);
+    window.onresize = () => {
+      console.log('dddd');
+      this.homeHeight = document.documentElement.clientHeight + 'px';
+    }
   },
   methods: {
     // 请求分类数据
@@ -224,25 +229,31 @@ export default {
       this.params.PageIndex = 1;
       this.params.Category = [];
       this.childCategoryList= [];
+      this.childCategory = [];
       this.tags = [];
-      if(item.categoryId !== '') {
-        this.childCategory = [];
+      if(item.categoryId == '') {
+        this.getChildCategoryList('')
+      }else {
         this.params.Category.push(item.categoryId);
-        getChildCategoryList({'category':item.categoryId})
-          .then(res => {
-            this.childCategoryList = res.data.data;
-          })
-          .catch(error => {
-            console.log(error)
-          })
+        this.getChildCategoryList({'category':item.categoryId});
       }
       this.getGoods(this.params);
+    },
+
+    // 获取childCategoryList
+    getChildCategoryList(category) {
+      getChildCategoryList(category)
+      .then(res => {
+        this.childCategoryList = res.data.data;
+      })
+      .catch(error => {
+        console.log(error)
+      })
     },
 
     // 添加childCategory
     addChildCategory() {
       this.params.Category = [];
-      // this.params.PageIndex = 1;
       if(this.childCategory.length == 0) {
         this.$refs.select.blur();
         this.params.Category.push(this.currentCategory);
@@ -251,20 +262,6 @@ export default {
           this.params.Category.push(String(category));
         });
       }
-      // this.getGoods(this.params);
-
-      // if(this.childCategory.length == 0) {
-      //   this.getGoods(this.params);
-      // }else {
-      //   let currentParams = Object.assign({}, this.params);
-      //   currentParams.Category = [];
-      //   this.childCategory.forEach(category => {
-      //     currentParams.Category.push(String(category));
-      //   })
-      //   console.log(currentParams);
-      //   debugger
-      //   this.getGoods(currentParams);
-      // }
     },
 
     prevPage() {
@@ -300,7 +297,12 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputValue;
       if (inputValue) {
-        this.tags.push(inputValue);
+        if(this.tags.length == 5) {
+          this.$message.warning("最多添加五个搜索条件！");
+          return
+        }else{
+          this.tags.push(inputValue);
+        }
       }
       this.inputVisible = false;
       this.inputValue = '';
@@ -343,7 +345,7 @@ export default {
 }
 .category-select {
   margin-top: 15px;
-  float: left;
+  float: right;
 }
 .search {
   margin-top: 15px;
@@ -389,7 +391,7 @@ export default {
 }
 .goods:hover {
   transition: all .2s;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4);
 }
 .goods-img {
   display: block;
@@ -440,10 +442,13 @@ export default {
   margin-top: 60px;
 }
 
-
 .footer-wrapper {
   position: fixed;
   bottom: 20px;
+  /* bottom: 0; */
+  /* z-index: 99; */
+  /* padding-bottom: 20px;
+  background-color: #fff; */
 }
 .paging {
   margin-top: 25px;
