@@ -11,17 +11,20 @@ import store from "../store"
   {
     name: 'Login',
     path: '/login',
-    component: Login
+    component: Login,
+    meta: {title: '登录页面'}
   },
   {
     path: '/home',
     name: 'Home',
     component: home,
+    meta: {title: '拍拍页面'}
   },
   {
     path: '/empty',
     name: 'Empty',
-    component: () => import('@/views/empty/Empty')
+    component: () => import('@/views/empty/Empty'),
+    meta: {title: 'empty'}
   }
 ];
 
@@ -31,6 +34,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  document.title = to.meta.title;
   if(store.getters.token){
     if(to.path === "/login") {
       next("/home")

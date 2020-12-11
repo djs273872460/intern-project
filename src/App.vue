@@ -5,10 +5,6 @@
 <script>
 export default {
   name: 'App',
-  // created() {
-  //   var app = document.querySelector('#app');
-  //   app.style.height = document.documentElement.clientHeight + 'px';
-  // }
 }
 </script>
 
