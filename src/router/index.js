@@ -12,19 +12,19 @@ import store from "../store"
     name: 'Login',
     path: '/login',
     component: Login,
-    meta: {title: '登录页面'}
+    meta: { title: '京东夺宝岛-登录'}
   },
   {
     path: '/home',
     name: 'Home',
     component: home,
-    meta: {title: '拍拍页面'}
+    meta: {title: '京东夺宝岛-数据展示'}
   },
   {
     path: '/empty',
     name: 'Empty',
     component: () => import('@/views/empty/Empty'),
-    meta: {title: 'empty'}
+    meta: { title: '京东夺宝岛-空数据'}
   }
 ];
 
