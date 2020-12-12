@@ -24,6 +24,8 @@ const store = createStore({
             commit('SET_TOKEN', res.data.data.token)
             setToken(res.data.data.token)
             resolve()
+          } else {
+            this.$message.error("登录失败:"+res.message)
           }
         }).catch(error => {
           reject(error)

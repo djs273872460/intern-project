@@ -17,6 +17,13 @@
     <el-container v-loading="loading" style="overflow: auto">
       <el-header class="header-wrapper">
         <div class="category-select">
+          <el-checkbox  
+          style="margin-left: 20px; overflow: hidden; width: 360px"
+          v-model="params.JdSelfOnly">
+          只看自营
+          </el-checkbox>
+        </div>
+        <div class="category-select">
           <el-select
             size="medium"
             multiple
@@ -83,6 +90,7 @@
           <div class="goods-price">
             <span class="current-price">{{ "￥" + item.currentPrice }}</span>
             <span class="capped-price">{{ "￥" + item.cappedPrice }}</span>
+            <span class="shop-Desc">{{!item.shopId || item.shopId.length ===0 ? "京东自营":"第三方商家"}}</span>
           </div>
           <div class="goods-desc">
             <a :href="item.link" target="_blank" :title="item.productName">
@@ -160,7 +168,8 @@ export default {
         Keyword: '',
         Category: [],
         PageIndex: 1,
-        PageSize: 48
+        PageSize: 48,
+        JdSelfOnly: false
       }
     };
   },
@@ -437,6 +446,16 @@ export default {
   color: #999;
   font-size: 12px;
   text-decoration: line-through;
+}
+.shop-desc {
+      color: #ff3434;
+    border-color: rgba(255,52,52,.7);
+    padding: 0 5px;
+    border: 1px solid rgba(255,52,52,.7);
+    border-radius: 10px;
+    line-height: 20px;
+    margin-right: 10px;
+    font:12px/150% tahoma,arial,Microsoft YaHei,Hiragino Sans GB,u5b8bu4f53,sans-serif;
 }
 .nogood {
   margin-top: 60px;
