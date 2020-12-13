@@ -1,6 +1,5 @@
 <template>
-  <el-container style="border: 1px solid #eee"
-                :style="'height:' + homeHeight">
+  <el-container style="border: 1px solid #eee" :style="'height:' + homeHeight">
     <el-aside width="200px" class="side">
       <el-menu :default-active="currentCategory" style="border-right: 0">
         <el-menu-item
@@ -17,71 +16,76 @@
     <el-container v-loading="loading" style="overflow: auto">
       <el-header class="header-wrapper">
         <div class="category-select">
-          <el-checkbox  
-          style="margin-left: 20px; overflow: hidden; width: 360px"
-          v-model="params.JdSelfOnly">
-          只看自营
+          <el-checkbox
+            v-model="params.JdSelfOnly"
+            style="margin-left: 20px; overflow: hidden; width: 360px"
+          >
+            只看自营
           </el-checkbox>
         </div>
         <div class="category-select">
           <el-select
+            ref="select"
+            v-model="childCategory"
             size="medium"
             multiple
             filterable
-            v-model="childCategory"
-            @change="addChildCategory"
             style="margin-left: 20px; overflow: hidden; width: 360px"
             placeholder="请选择"
-            ref="select">
+            @change="addChildCategory"
+          >
             <el-option
               v-for="item in childCategoryList"
               :key="item.category"
               :label="item.categoryName"
-              :value="item.category">
+              :value="item.category"
+            >
             </el-option>
           </el-select>
         </div>
 
         <div class="search">
-          <el-tag 
-            :key="tag" 
+          <el-tag
             v-for="tag in tags"
+            :key="tag"
             closable
             :disable-transitions="false"
+            class="tag"
             @close="handleClose(tag)"
-            class="tag">
-            {{tag}}
+          >
+            {{ tag }}
           </el-tag>
 
           <el-input
-            class="input-new-tag"
             v-if="inputVisible"
-            v-model="inputValue"
             ref="saveTagInput"
+            v-model="inputValue"
+            class="input-new-tag"
             size="medium"
             @keyup.enter="handleInputConfirm"
             @blur="handleInputConfirm"
           >
           </el-input>
-          <el-button v-else
-              class="button-new-tag"
-              size="medium"
-              @click="showInput"
+          <el-button
+            v-else
+            class="button-new-tag"
+            size="medium"
+            @click="showInput"
             >添加搜索tag
-            </el-button>
+          </el-button>
           <el-button
             class="search-button"
             size="medium"
             type="primary"
             icon="el-icon-search"
             @click="searchGoods"
-          >搜索
+            >搜索
           </el-button>
         </div>
       </el-header>
 
-      <div ref="goodsWrapper" class="goods-wrapper" v-if="goodsList.length > 0">
-        <div class="goods" v-for="item in goodsList" :key="item.Id">
+      <div v-if="goodsList.length > 0" ref="goodsWrapper" class="goods-wrapper">
+        <div v-for="item in goodsList" :key="item.Id" class="goods">
           <div class="goods-img">
             <a :href="item.link" target="_blank">
               <img :src="item.primaryPic" />
@@ -90,7 +94,11 @@
           <div class="goods-price">
             <span class="current-price">{{ "￥" + item.currentPrice }}</span>
             <span class="capped-price">{{ "￥" + item.cappedPrice }}</span>
-            <span class="shop-Desc">{{!item.shopId || item.shopId.length ===0 ? "京东自营":"第三方商家"}}</span>
+            <span class="shop-Desc">{{
+              !item.shopId || item.shopId.length === 0
+                ? "京东自营"
+                : "第三方商家"
+            }}</span>
           </div>
           <div class="goods-desc">
             <a :href="item.link" target="_blank" :title="item.productName">
@@ -104,25 +112,92 @@
             已结束
           </div>
           <div v-else class="state underway">
-            <span v-if="(Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 60 * 1000)))<10">
-              {{ '0'+Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 60 * 1000)) }} : </span>
-            <span v-else>{{ Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 60 * 1000)) }} : </span>
-            <span v-if="(Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 1000)))<10">
-              {{ '0'+Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 1000)) }} : </span>
-            <span v-else>{{ Math.floor((new Date(item.endTime).getTime() - currentTime) / (60 * 1000)) }} : </span>
-            <span v-if="(Math.floor((new Date(item.endTime).getTime() - currentTime) % (60 * 1000) /1000))<10">
-              {{ '0'+Math.floor((new Date(item.endTime).getTime() - currentTime) % (60 * 1000) /1000) }}</span>
-            <span v-else>{{ Math.floor((new Date(item.endTime).getTime() - currentTime) % (60 * 1000) /1000) }}</span>
+            <span
+              v-if="
+                Math.floor(
+                  (new Date(item.endTime).getTime() - currentTime) /
+                    (60 * 60 * 1000)
+                ) < 10
+              "
+            >
+              {{
+                "0" +
+                  Math.floor(
+                    (new Date(item.endTime).getTime() - currentTime) /
+                      (60 * 60 * 1000)
+                  )
+              }}
+              :
+            </span>
+            <span v-else
+              >{{
+                Math.floor(
+                  (new Date(item.endTime).getTime() - currentTime) /
+                    (60 * 60 * 1000)
+                )
+              }}
+              :
+            </span>
+            <span
+              v-if="
+                Math.floor(
+                  (new Date(item.endTime).getTime() - currentTime) / (60 * 1000)
+                ) < 10
+              "
+            >
+              {{
+                "0" +
+                  Math.floor(
+                    (new Date(item.endTime).getTime() - currentTime) /
+                      (60 * 1000)
+                  )
+              }}
+              :
+            </span>
+            <span v-else
+              >{{
+                Math.floor(
+                  (new Date(item.endTime).getTime() - currentTime) / (60 * 1000)
+                )
+              }}
+              :
+            </span>
+            <span
+              v-if="
+                Math.floor(
+                  ((new Date(item.endTime).getTime() - currentTime) %
+                    (60 * 1000)) /
+                    1000
+                ) < 10
+              "
+            >
+              {{
+                "0" +
+                  Math.floor(
+                    ((new Date(item.endTime).getTime() - currentTime) %
+                      (60 * 1000)) /
+                      1000
+                  )
+              }}</span
+            >
+            <span v-else>{{
+              Math.floor(
+                ((new Date(item.endTime).getTime() - currentTime) %
+                  (60 * 1000)) /
+                  1000
+              )
+            }}</span>
           </div>
         </div>
       </div>
       <el-alert
-        class="nogood"
         v-else
+        class="nogood"
         title="没有找到商品"
         type="warning"
         description="去逛逛其他吧！！！"
-        show-icon>
+        show-icon
+      >
       </el-alert>
 
       <el-footer class="footer-wrapper">
@@ -146,127 +221,131 @@
 <script>
 import { getCategroyList } from "@/api/category.js";
 import { getGoodsList } from "@/api/goods.js";
-import { getChildCategoryList } from "@/api/child-category.js"
+import { getChildCategoryList } from "@/api/child-category.js";
 
 export default {
   data() {
     return {
-      homeHeight: '',
-      firstRequest: false,  //判断页面是否首次请求商品数据,不是的话,$ref.goodsWrapper.scrollTop = 0
+      homeHeight: "",
+      firstRequest: false, // 判断页面是否首次请求商品数据,不是的话,$ref.goodsWrapper.scrollTop = 0
       sideList: [],
-      currentCategory: '',
+      currentCategory: "",
       tags: [],
       inputVisible: false,
-      inputValue: '',
+      inputValue: "",
       childCategoryList: [],
-      childCategory:[],
-      total: '',
+      childCategory: [],
+      total: "",
       goodsList: [],
       loading: true,
       currentTime: new Date().getTime(),
       params: {
-        Keyword: '',
+        Keyword: "",
         Category: [],
         PageIndex: 1,
-        PageSize: 48,
+        PageSize: 24,
         JdSelfOnly: false
       }
     };
   },
   mounted() {
-    this.homeHeight = document.documentElement.clientHeight + 'px';
+    this.homeHeight = document.documentElement.clientHeight + "px";
     this.loading = false;
     this.getCategroy();
-    this.getGoods(this.params);
-    this.getChildCategoryList('');
+    this.getGoods();
+    this.getChildCategoryList("");
     setInterval(() => {
       this.currentTime = new Date().getTime();
     }, 1000);
     window.onresize = () => {
-      console.log('dddd');
-      this.homeHeight = document.documentElement.clientHeight + 'px';
-    }
+      console.log("dddd");
+      this.homeHeight = document.documentElement.clientHeight + "px";
+    };
   },
   methods: {
     // 请求分类数据
     getCategroy() {
       getCategroyList()
         .then(res => {
-          if(res.data.data.length == 0) {
-            this.$router.push({path:'/empty'});
-          }else {
-            res.data.data.forEach(item => {
-            this.sideList.push(item);
-            });
+          if (res.data.data.length === 0) {
+            this.$router.push({ path: "/empty" });
+          } else {
+            this.sideList = res.data.data;
           }
         })
         .catch(error => {
           console.log(error);
-          this.$router.push({path:'/empty'});
+          this.$router.push({ path: "/empty" });
         });
     },
 
-    //请求商品数据
-    getGoods(params) {
+    // 请求商品数据
+    async getGoods() {
       this.loading = true;
-      getGoodsList(params)
+      console.time("query");
+      await getGoodsList(this.params)
         .then(res => {
-          this.loading = false;
+          console.timeLog("query")
           this.total = res.data.data.total;
           this.goodsList = [];
           this.currentTime = new Date().getTime();
-          res.data.data.data.forEach(good => {
-            good.startTime = new Date(good.startTime).getTime();
-            good.endTime = new Date(good.endTime).getTime();
-            this.goodsList.push(good);
+          this.goodsList = res.data.data.data.map(t => {
+            var item = t;
+            item.startTime = new Date(t.startTime).getTime();
+            item.endTime = new Date(t.endTime).getTime();
+            return item;
           });
-          if(this.firstRequest) {
+          console.timeEnd("query");
+          if (this.firstRequest) {
             this.$refs.goodsWrapper.scrollTop = 0;
-          }else {
+          } else {
             this.firstRequest = true;
           }
+          this.loading = false;
+          
+        })
+        .catch(error => {
+          console.log(error);
+          this.loading = false;
+        });
+    },
+
+    // 改变左侧Category
+    async changeCateGory(item) {
+      this.currentCategory = item.categoryId;
+      this.params.Keyword = "";
+      this.params.PageIndex = 1;
+      this.params.Category = [];
+      this.childCategoryList = [];
+      this.childCategory = [];
+      this.tags = [];
+      if (item.categoryId === "") {
+        this.getChildCategoryList("");
+      } else {
+        this.params.Category.push(item.categoryId);
+        this.getChildCategoryList({ category: item.categoryId });
+      }
+      await this.getGoods();
+    },
+
+    // 获取childCategoryList
+    async getChildCategoryList(category) {
+      getChildCategoryList(category)
+        .then(res => {
+          this.childCategoryList = res.data.data;
         })
         .catch(error => {
           console.log(error);
         });
-    },
-
-    //改变左侧Category 
-    changeCateGory(item) {
-      this.currentCategory = item.categoryId;
-      this.params.Keyword = '';
-      this.params.PageIndex = 1;
-      this.params.Category = [];
-      this.childCategoryList= [];
-      this.childCategory = [];
-      this.tags = [];
-      if(item.categoryId == '') {
-        this.getChildCategoryList('')
-      }else {
-        this.params.Category.push(item.categoryId);
-        this.getChildCategoryList({'category':item.categoryId});
-      }
-      this.getGoods(this.params);
-    },
-
-    // 获取childCategoryList
-    getChildCategoryList(category) {
-      getChildCategoryList(category)
-      .then(res => {
-        this.childCategoryList = res.data.data;
-      })
-      .catch(error => {
-        console.log(error)
-      })
     },
 
     // 添加childCategory
     addChildCategory() {
       this.params.Category = [];
-      if(this.childCategory.length == 0) {
+      if (this.childCategory.length === 0) {
         this.$refs.select.blur();
         this.params.Category.push(this.currentCategory);
-      }else{
+      } else {
         this.childCategory.forEach(category => {
           this.params.Category.push(String(category));
         });
@@ -275,23 +354,23 @@ export default {
 
     prevPage() {
       this.params.PageIndex -= 1;
-      this.getGoods(this.params);
+      this.getGoods();
     },
 
     nextPage() {
       this.params.PageIndex += 1;
-      this.getGoods(this.params);
+      this.getGoods();
     },
 
     currentPage(val) {
       this.params.PageIndex = val;
-      this.getGoods(this.params);
+      this.getGoods();
     },
 
     searchGoods() {
       this.params.PageIndex = 1;
-      this.params.Keyword = this.tags.join(',');
-      this.getGoods(this.params);
+      this.params.Keyword = this.tags.join(",");
+      this.getGoods();
     },
 
     handleClose(tag) {
@@ -304,21 +383,21 @@ export default {
       });
     },
     handleInputConfirm() {
-      let inputValue = this.inputValue;
+      const inputValue = this.inputValue;
       if (inputValue) {
-        if(this.tags.length == 5) {
+        if (this.tags.length === 5) {
           this.$message.warning("最多添加五个搜索条件！");
-          return
-        }else{
+          return;
+        } else {
           this.tags.push(inputValue);
         }
       }
       this.inputVisible = false;
-      this.inputValue = '';
+      this.inputValue = "";
     },
     timeLag(time) {
-      let e = new Date(time).getTime();
-      let lag = e - this.currentTime;
+      const e = new Date(time).getTime();
+      const lag = e - this.currentTime;
       return new Date(lag);
     }
   }
@@ -327,13 +406,13 @@ export default {
 
 <style>
 ::-webkit-scrollbar {
-  width:8px;
-  height:8px; 
-  border-radius:10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  display:block; 
-  width:6px; 
+  display: block;
+  width: 6px;
   border-radius: 10px;
   background: rgb(226, 226, 226);
 }
@@ -342,8 +421,6 @@ export default {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   font-weight: bold;
 }
-
-
 .header-wrapper {
   position: fixed;
   z-index: 99;
@@ -366,19 +443,18 @@ export default {
   vertical-align: bottom;
 }
 .button-new-tag {
-  border-radius: 4px 0  0 4px;
+  border-radius: 4px 0 0 4px;
 }
 .search-button {
   border-radius: 0 4px 4px 0;
   margin-left: 0 !important;
 }
-.tag{
+.tag {
   margin-right: 10px;
 }
-
-
 .goods-wrapper {
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   width: 1600px;
   height: calc(100% - 150px);
   padding: 5px 10px 0 0;
@@ -399,7 +475,7 @@ export default {
   float: left;
 }
 .goods:hover {
-  transition: all .2s;
+  transition: all 0.2s;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.4);
 }
 .goods-img {
@@ -448,14 +524,15 @@ export default {
   text-decoration: line-through;
 }
 .shop-desc {
-      color: #ff3434;
-    border-color: rgba(255,52,52,.7);
-    padding: 0 5px;
-    border: 1px solid rgba(255,52,52,.7);
-    border-radius: 10px;
-    line-height: 20px;
-    margin-right: 10px;
-    font:12px/150% tahoma,arial,Microsoft YaHei,Hiragino Sans GB,u5b8bu4f53,sans-serif;
+  color: #ff3434;
+  border-color: rgba(255, 52, 52, 0.7);
+  padding: 0 5px;
+  border: 1px solid rgba(255, 52, 52, 0.7);
+  border-radius: 10px;
+  line-height: 20px;
+  margin-right: 10px;
+  font: 12px/150% tahoma, arial, Microsoft YaHei, Hiragino Sans GB, u5b8bu4f53,
+    sans-serif;
 }
 .nogood {
   margin-top: 60px;
@@ -472,7 +549,7 @@ export default {
 .paging {
   margin-top: 25px;
 }
-.paging span{
+.paging span {
   padding: 0 5px;
   background-color: #f4f4f5;
   font-weight: 600;
@@ -489,10 +566,10 @@ export default {
   color: #fff;
 }
 .not-start {
-  background-color: #E6A23C ;
+  background-color: #e6a23c;
 }
 .underway {
-  background-color: #67C23A;
+  background-color: #67c23a;
 }
 .finish {
   background-color: #909399;
