@@ -1,7 +1,7 @@
 <template>
 <div class="login-container" ref="loginContainer">
   <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="100px" class="login-form">
-    <h2>Login Form</h2>
+    <h2>夺宝岛系统登录</h2>
     <el-form-item label="用户" prop="username">
       <el-input type="text" v-model="loginForm.username" autocomplete="off"></el-input>
     </el-form-item>
@@ -9,8 +9,7 @@
       <el-input type="password" v-model="loginForm.password" autocomplete="off"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="submitForm">提交</el-button>
-      <el-button @click="resetForm">重置</el-button>
+      <el-button type="primary" @click="submitForm">登录</el-button>   
     </el-form-item>
   </el-form>
 </div>
