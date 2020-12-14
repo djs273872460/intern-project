@@ -15,13 +15,8 @@
 
     <el-container v-loading="loading" style="overflow: auto">
       <el-header class="header-wrapper">
-        <div class="category-select">
-          <el-checkbox
-            v-model="params.JdSelfOnly"
-            style="margin-left: 20px; overflow: hidden; width: 360px"
-          >
-            只看自营
-          </el-checkbox>
+        <div class="jd-self-only">
+          <el-checkbox v-model="params.JdSelfOnly">只看自营</el-checkbox>
         </div>
         <div class="category-select">
           <el-select
@@ -43,7 +38,6 @@
             </el-option>
           </el-select>
         </div>
-
         <div class="search">
           <el-tag
             v-for="tag in tags"
@@ -93,8 +87,8 @@
           </div>
           <div class="goods-price">
             <span class="current-price">{{ "￥" + item.currentPrice }}</span>
-            <span class="capped-price">{{ "￥" + item.cappedPrice }}</span>
-            <span class="shop-Desc">{{
+            <span class="capped-price">{{ "￥" + item.cappedPrice }}</span>&nbsp;
+            <span class="shop-desc">{{
               !item.shopId || item.shopId.length === 0
                 ? "京东自营"
                 : "第三方商家"
@@ -258,7 +252,6 @@ export default {
       this.currentTime = new Date().getTime();
     }, 1000);
     window.onresize = () => {
-      console.log("dddd");
       this.homeHeight = document.documentElement.clientHeight + "px";
     };
   },
@@ -282,10 +275,8 @@ export default {
     // 请求商品数据
     async getGoods() {
       this.loading = true;
-      console.time("query");
       await getGoodsList(this.params)
         .then(res => {
-          console.timeLog("query")
           this.total = res.data.data.total;
           this.goodsList = [];
           this.currentTime = new Date().getTime();
@@ -295,7 +286,6 @@ export default {
             item.endTime = new Date(t.endTime).getTime();
             return item;
           });
-          console.timeEnd("query");
           if (this.firstRequest) {
             this.$refs.goodsWrapper.scrollTop = 0;
           } else {
@@ -322,6 +312,7 @@ export default {
       if (item.categoryId === "") {
         this.getChildCategoryList("");
       } else {
+        console.log("ddddddd");
         this.params.Category.push(item.categoryId);
         this.getChildCategoryList({ category: item.categoryId });
       }
@@ -344,7 +335,9 @@ export default {
       this.params.Category = [];
       if (this.childCategory.length === 0) {
         this.$refs.select.blur();
-        this.params.Category.push(this.currentCategory);
+        if(this.currentCategory !== '') {
+          this.params.Category.push(this.currentCategory);
+        }
       } else {
         this.childCategory.forEach(category => {
           this.params.Category.push(String(category));
@@ -425,17 +418,19 @@ export default {
   position: fixed;
   z-index: 99;
   width: 1600px;
-  max-width: 1600px;
-  min-width: 630px;
   background-color: #fff;
+  padding: 15px 10px 0 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.jd-self-only {
+  margin-top: 5px;
 }
 .category-select {
-  margin-top: 15px;
-  float: right;
+  overflow: auto;
 }
 .search {
-  margin-top: 15px;
-  float: right;
+  margin-left: 10px;
 }
 .input-new-tag {
   width: 90px;
